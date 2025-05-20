@@ -32,7 +32,7 @@ class Controller:
             self._view.update_page()
 
         else:
-            grafo = self._model.buildGraph(year, country)
+            self._grafo = self._model.buildGraph(year, country)
             nNodes = self._model.getNumNodes()
             nEdges = self._model.getNumEdges()
             self._view.txt_result.controls.clear()
@@ -41,8 +41,7 @@ class Controller:
             self._view.update_page()
 
     def handle_volume(self, e):
-        pass
-
+        volumi = self._model.getVolume
 
     def handle_path(self, e):
         pass
