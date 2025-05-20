@@ -23,9 +23,22 @@ class Controller:
 
 
     def handle_graph(self, e):
-        pass
+        year = self._view.ddyear.value
+        country = self._view.ddcountry.value
 
+        if year is None or country is None:
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(ft.Text(f"Selezionare tutti i parametri!", color="red"))
+            self._view.update_page()
 
+        else:
+            grafo = self._model.buildGraph(year, country)
+            nNodes = self._model.getNumNodes()
+            nEdges = self._model.getNumEdges()
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(ft.Text(f"Grafo creato correttamente!"))
+            self._view.txt_result.controls.append(ft.Text(f"Il grafo ha {nNodes} nodi e {nEdges} archi"))
+            self._view.update_page()
 
     def handle_volume(self, e):
         pass
