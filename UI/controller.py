@@ -41,7 +41,35 @@ class Controller:
             self._view.update_page()
 
     def handle_volume(self, e):
-        volumi = self._model.getVolume
+        self._view.txtOut2.controls.clear()
+        volumi = self._model.getVolume()
+        sorted_volumi = sorted(volumi.items(), key=lambda x: x[1], reverse=True)
+        for i in sorted_volumi:
+            self._view.txtOut2.controls.append(ft.Text(f"{i[0]} ---> {i[1]}"))
+        self._view.update_page()
 
     def handle_path(self, e):
-        pass
+        nInput = self._view.txtN.value
+
+        if nInput == "":
+            self._view.txtOut3.controls.clear()
+            self._view.txtOut3.controls.append(ft.Text(f"Inserire un valore!", color="red"))
+
+        try:
+            nInt = int(nInput)
+        except ValueError:
+            self._view.txtOut3.controls.clear()
+            self._view.txtOut3.controls.append(ft.Text("Il valore inserito non è un intero!", color="red"))
+            return
+
+        if nInt < 2:
+            self._view.txtOut3.controls.clear()
+            self._view.txt_result.controls.append(ft.Text(f"Devono esserci almeno 2 archi!", color="red"))
+
+        bestPath, maxWeight = self._model.getBestPath(nInt)
+        self._view.txtOut3.controls.clear()
+        self._view.txtOut3.controls.append(ft.Text(f"Peso cammino massimo: {maxWeight}"))
+        for i in range(0, len(bestPath)):
+            peso = self._model.getPeso(bestPath[i], bestPath[i+1])
+            self._view.txtOut3.controls.append(ft.Text(f"{bestPath[i]} ---> {bestPath[i+1]}: {peso}"))
+        self._view.update_page()

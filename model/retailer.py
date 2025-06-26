@@ -11,7 +11,9 @@ class Retailer:
         return hash(self.Retailer_code)
 
     def __eq__(self, other):
+        if not isinstance(other, Retailer):
+            return False
         return self.Retailer_code == other.Retailer_code
 
     def __str__(self):
-        return f"{self.Retailer_name} - ({self.Retailer_code})"
+        return f"{self.Retailer_name}"
