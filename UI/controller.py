@@ -11,65 +11,48 @@ class Controller:
         self._listYear = []
         self._listCountry = []
 
-    def fillDDCountries(self):
-        self._listCountry = self._model.getAllCountries()
-        for c in self._listCountry:
-            self._view.ddcountry.options.append(ft.dropdown.Option(c))
-
-    def fillDDYears(self):
-        self._listYear = [2015, 2016, 2017, 2018]
-        for y in self._listYear:
-            self._view.ddyear.options.append(ft.dropdown.Option(y))
-
 
     def handle_graph(self, e):
         year = self._view.ddyear.value
+        if year is None:
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(ft.Text(f"Selezionare un anno", color="red"))
+            self._view.update_page()
+            return
         country = self._view.ddcountry.value
-
-        if year is None or country is None:
+        if country is None:
             self._view.txt_result.controls.clear()
-            self._view.txt_result.controls.append(ft.Text(f"Selezionare tutti i parametri!", color="red"))
+            self._view.txt_result.controls.append(ft.Text(f"Selezionare uno stato", color="red"))
             self._view.update_page()
+            return
 
-        else:
-            self._grafo = self._model.buildGraph(year, country)
-            nNodes = self._model.getNumNodes()
-            nEdges = self._model.getNumEdges()
-            self._view.txt_result.controls.clear()
-            self._view.txt_result.controls.append(ft.Text(f"Grafo creato correttamente!"))
-            self._view.txt_result.controls.append(ft.Text(f"Il grafo ha {nNodes} nodi e {nEdges} archi"))
-            self._view.update_page()
+        self._model.buildGraph(country, year)
+        self._view.txt_result.controls.clear()
+        self._view.txt_result.controls.append(ft.Text(f"Grafo correttamente creato", color="green"))
+        nNodes, nEdges = self._model.getGraphDetails()
+        self._view.txt_result.controls.append(ft.Text(f"Numero di nodi: {nNodes}, numero di archi {nEdges}"))
+        self._view.update_page()
 
     def handle_volume(self, e):
         self._view.txtOut2.controls.clear()
-        volumi = self._model.getVolume()
-        sorted_volumi = sorted(volumi.items(), key=lambda x: x[1], reverse=True)
-        for i in sorted_volumi:
-            self._view.txtOut2.controls.append(ft.Text(f"{i[0]} ---> {i[1]}"))
+        self._view.txtOut2.controls.append(ft.Text("I volumi di vendita sono:"))
+        res = self._model.getVolumi()
+        for r, p in res.items():
+            self._view.txtOut2.controls.append(ft.Text(f"{r.Retailer_name} --> {p}"))
         self._view.update_page()
 
+
     def handle_path(self, e):
-        nInput = self._view.txtN.value
+        pass
 
-        if nInput == "":
-            self._view.txtOut3.controls.clear()
-            self._view.txtOut3.controls.append(ft.Text(f"Inserire un valore!", color="red"))
+    def fillDDYears(self):
+        years = self._model.getYears()
+        for y in years:
+            self._view.ddyear.options.append(ft.dropdown.Option(y))
+        self._view.update_page()
 
-        try:
-            nInt = int(nInput)
-        except ValueError:
-            self._view.txtOut3.controls.clear()
-            self._view.txtOut3.controls.append(ft.Text("Il valore inserito non è un intero!", color="red"))
-            return
-
-        if nInt < 2:
-            self._view.txtOut3.controls.clear()
-            self._view.txt_result.controls.append(ft.Text(f"Devono esserci almeno 2 archi!", color="red"))
-
-        bestPath, maxWeight = self._model.getBestPath(nInt)
-        self._view.txtOut3.controls.clear()
-        self._view.txtOut3.controls.append(ft.Text(f"Peso cammino massimo: {maxWeight}"))
-        for i in range(0, len(bestPath)):
-            peso = self._model.getPeso(bestPath[i], bestPath[i+1])
-            self._view.txtOut3.controls.append(ft.Text(f"{bestPath[i]} ---> {bestPath[i+1]}: {peso}"))
+    def fillDDCountries(self):
+        countries = self._model.getCountries()
+        for c in countries:
+            self._view.ddcountry.options.append(ft.dropdown.Option(c))
         self._view.update_page()
