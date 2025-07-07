@@ -11,6 +11,42 @@ class Model:
         self._edges = []
         self._idMap = {}
         self._graph = nx.Graph()
+        self._bestPath = []
+        self._maxWeight = 0
+
+    def getBestPath(self, num):
+        self._bestPath = []
+        self._maxWeight = 0
+
+        for start in self._graph.nodes:
+            parziale = [start]
+            self._ricorsione(start, parziale, num)
+
+        return self._bestPath, self._maxWeight
+
+    def _ricorsione(self, start, parziale, num):
+        if len(parziale) == num:  # ciclo composto da esattamente n archi
+            lastNode = parziale[-1]
+            if self._graph.has_edge(lastNode, start):
+                parziale.append(start)
+                if self.getMaxWeight(parziale) > self._maxWeight:
+                    self._maxWeight = self.getMaxWeight(parziale)
+                    self._bestPath = copy.deepcopy(parziale)
+                parziale.pop()  # rimuove il nodo iniziale dopo la verifica
+            return
+
+        lastNode = parziale[-1]
+        for n in self._graph.neighbors(lastNode):
+            if n not in parziale and n != start:  # verifica che non ci siano ripetizioni, tranne per l'inizio e la fine
+                parziale.append(n)
+                self._ricorsione(start, parziale, num)
+                parziale.pop()
+
+    def getMaxWeight(self, listOfNodes):
+        pesoTot = 0
+        for i in range(0, len(listOfNodes) - 1):
+            pesoTot += self._graph[listOfNodes[i]][listOfNodes[i + 1]]["weight"]
+        return pesoTot
 
     def getYears(self):
         self._years = DAO.getYears()
@@ -59,3 +95,5 @@ class Model:
             res[n] = peso
         res_ordinato = dict(sorted(res.items(), key=lambda x: x[1], reverse=True))
         return res_ordinato
+
+

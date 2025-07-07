@@ -43,7 +43,32 @@ class Controller:
 
 
     def handle_path(self, e):
-        pass
+        numInput = self._view.txtN.value
+
+        if numInput == "":
+            self._view.txt_result.controls.clear()
+            self._view.txt_result.controls.append(ft.Text("Inserire una lunghezza", color="red"))
+            return
+
+        try:
+            num = int(numInput)
+        except ValueError:
+            self._view.txtOut3.controls.clear()
+            self._view.txtOut3.controls.append(ft.Text("Inserire un numero intero", color="red"))
+            return
+
+        bestPath, bestWeight = self._model.getBestPath(num)
+        self._view.txtOut3.controls.append(ft.Text(f"Il percorso migliore di {num} nodi è stato trovato, con peso {bestWeight}", color="green"))
+        self._view.txtOut3.controls.append(ft.Text(f"I nodi che lo compongono sono:"))
+        for i in range(0, len(bestPath) - 1):
+            nodo1 = bestPath[i]
+            nodo2 = bestPath[i + 1]
+            peso = self._model._graph[nodo1][nodo2]["weight"]
+            self._view.txtOut3.controls.append(
+                ft.Text(f"{nodo1.Retailer_name} --> {nodo2.Retailer_name} : {peso}")
+            )
+
+        self._view.update_page()
 
     def fillDDYears(self):
         years = self._model.getYears()
