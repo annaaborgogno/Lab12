@@ -95,5 +95,3 @@ class Model:
             res[n] = peso
         res_ordinato = dict(sorted(res.items(), key=lambda x: x[1], reverse=True))
         return res_ordinato
-
-
